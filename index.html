@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Name Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+       .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+        
+       .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        
+       .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+        
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+       .range-display {
+            text-align: right;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+        
+       .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+       .results {
+            margin-top: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+       .result-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+       .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.2s;
+        }
+        
+       .copy-btn:hover {
+            background: #5568d3;
+        }
+        
+       .mora-badge {
+            background: #764ba2;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            margin-left: 8px;
+        }
+        
+       .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+       .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 Japanese Name Generator</h1>
+        <p class="subtitle">Create beautiful, phonetic Japanese-style names</p>
+        
+        <div class="form-group">
+            <label for="moraLength">Name Length (Mora)</label>
+            <input type="number" id="moraLength" min="1" max="8" value="3">
+            <div class="range-display">1-8 syllables</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="count">How Many Names</label>
+            <input type="number" id="count" min="1" max="50" value="5">
+            <div class="range-display">1-50 names</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="style">Style</label>
+            <select id="style">
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="NEUTRAL" selected>Neutral</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" id="withSurname" checked>
+                <label for="withSurname" style="margin: 0;">Include Surname</label>
+            </div>
+        </div>
+        
+        <button onclick="generateNames()">Generate Names</button>
+        
+        <div class="results" id="results"></div>
+    </div>
+    
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        // Weighted mora - common sounds have higher weight
+        const WEIGHTED_MORA = [
+            {mora: 'a', weight: 5}, {mora: 'i', weight: 5}, {mora: 'u', weight: 4}, 
+            {mora: 'e', weight: 4}, {mora: 'o', weight: 5},
+            {mora: 'ka', weight: 5}, {mora: 'ki', weight: 5}, {mora: 'ku', weight: 4}, 
+            {mora: 'ke', weight: 4}, {mora: 'ko', weight: 5},
+            {mora: 'sa', weight: 4}, {mora: 'shi', weight: 5}, {mora: 'su', weight: 4}, 
+            {mora: 'se', weight: 3}, {mora: 'so', weight: 3},
+            {mora: 'ta', weight: 5}, {mora: 'chi', weight: 4}, {mora: 'tsu', weight: 4}, 
+            {mora: 'te', weight: 3}, {mora: 'to', weight: 5},
+            {mora: 'na', weight: 5}, {mora: 'ni', weight: 4}, {mora: 'nu', weight: 2}, 
+            {mora: 'ne', weight: 3}, {mora: 'no', weight: 4},
+            {mora: 'ha', weight: 4}, {mora: 'hi', weight: 4}, {mora: 'fu', weight: 3}, 
+            {mora: 'he', weight: 2}, {mora: 'ho', weight: 3},
+            {mora: 'ma', weight: 5}, {mora: 'mi', weight: 5}, {mora: 'mu', weight: 3}, 
+            {mora: 'me', weight: 3}, {mora: 'mo', weight: 4},
+            {mora: 'ya', weight: 4}, {mora: 'yu', weight: 4}, {mora: 'yo', weight: 4},
+            {mora: 'ra', weight: 5}, {mora: 'ri', weight: 5}, {mora: 'ru', weight: 4}, 
+            {mora: 're', weight: 3}, {mora: 'ro', weight: 4},
+            {mora: 'wa', weight: 3}, {mora: 'wo', weight: 1}, {mora: 'n', weight: 3}
+        ];
+        
+        const TOTAL_WEIGHT = WEIGHTED_MORA.reduce((sum, w) => sum + w.weight, 0);
+        
+        const ENDINGS = [
+            {text: 'ro', mora: 1, styles: ['MALE']},
+            {text: 'to', mora: 1, styles: ['MALE']},
+            {text: 'ki', mora: 1, styles: ['MALE', 'FEMALE']},
+            {text: 'ta', mora: 1, styles: ['MALE']},
+            {text: 'ya', mora: 1, styles: ['MALE', 'FEMALE']},
+            {text: 'ma', mora: 1, styles: ['MALE', 'FEMALE']},
+            {text: 'hiko', mora: 2, styles: ['MALE']},
+            {text: 'suke', mora: 2, styles: ['MALE']},
+            {text: 'ko', mora: 1, styles: ['FEMALE']},
+            {text: 'mi', mora: 1, styles: ['FEMALE']},
+            {text: 'na', mora: 1, styles: ['FEMALE']},
+            {text: 'ka', mora: 1, styles: ['FEMALE']},
+            {text: 'e', mora: 1, styles: ['FEMALE']},
+            {text: 'yo', mora: 1, styles: ['FEMALE']},
+            {text: 'rin', mora: 1, styles: ['FEMALE']},
+            {text: 'ho', mora: 1, styles: ['FEMALE']}
+        ];
+        
+        const SURNAMES = [
+            'Sato', 'Suzuki', 'Takahashi', 'Tanaka', 'Watanabe', 'Ito', 'Yamamoto', 'Nakamura', 
+            'Kobayashi', 'Kato', 'Yoshida', 'Yamada', 'Sasaki', 'Yamaguchi', 'Matsumoto', 'Inoue',
+            'Kimura', 'Hayashi', 'Shimizu', 'Yamazaki', 'Mori', 'Abe', 'Ikeda', 'Hashimoto'
+        ];
+        
+        const BANNED_TRANSITIONS = new Set(['nn', 'wu', 'yi', 'ye']);
+        
+        function pickWeightedMora() {
+            let r = Math.random() * TOTAL_WEIGHT;
+            for (const wm of WEIGHTED_MORA) {
+                r -= wm.weight;
+                if (r < 0) return wm.mora;
+            }
+            return WEIGHTED_MORA[0].mora;
+        }
+        
+        function generateFirstName(targetMora, style) {
+            const validEndings = ENDINGS.filter(e => 
+                (style === 'NEUTRAL' || e.styles.includes(style)) && e.mora < targetMora
+            );
+            
+            const useEnding = validEndings.length > 0 && Math.random() < 0.7;
+            const chosenEnding = useEnding? validEndings[Math.floor(Math.random() * validEndings.length)] : null;
+            const baseMoraCount = useEnding? targetMora - chosenEnding.mora : targetMora;
+            
+            let name = '';
+            let prevMora = '';
+            let moraCount = 0;
+            
+            while (moraCount < baseMoraCount) {
+                const mora = pickWeightedMora();
+                
+                if (mora === 'n' && (prevMora === '' || prevMora === 'n')) continue;
+                if (BANNED_TRANSITIONS.has(prevMora + mora)) continue;
+                
+                name += mora;
+                prevMora = mora;
+                moraCount++;
+            }
+            
+            if (chosenEnding) {
+                name += chosenEnding.text;
+            }
+            
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+        
+        function getRandomSurname() {
+            return SURNAMES[Math.floor(Math.random() * SURNAMES.length)];
+        }
+        
+        function generateNames() {
+            const moraLength = parseInt(document.getElementById('moraLength').value);
+            const count = parseInt(document.getElementById('count').value);
+            const style = document.getElementById('style').value;
+            const withSurname = document.getElementById('withSurname').checked;
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const firstName = generateFirstName(moraLength, style);
+                const fullName = withSurname? `${firstName} ${getRandomSurname()}` : firstName;
+                
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                item.innerHTML = `
+                    <span>${fullName} <span class="mora-badge">${moraLength} mora</span></span>
+                    <button class="copy-btn" onclick="copyToClipboard('${fullName}')">Copy</button>
+                `;
+                resultsDiv.appendChild(item);
+            }
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // Generate on load
+        window.onload = generateNames;
+    </script>
+</body>
+</html>
